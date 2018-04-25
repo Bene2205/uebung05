@@ -1,29 +1,44 @@
 package ueb05;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
-class CorpusAnalyzer {
+public class CorpusAnalyzer {
 	private List<String> theses;
 
 	CorpusAnalyzer(Iterator<String> thesesIterator) {
 		// TODO Alle Titel in die this.theses Liste übernehmen
+		theses = new LinkedList<>();
+		while(thesesIterator.hasNext()){
+			theses.add(thesesIterator.next());
+		}
 	}
 
 	/**
 	 * Gibt die Anzahl der angefertigten Theses zurück
 	 */
 	int countTheses() {
-		throw new UnsupportedOperationException();
+		return theses.size();
 	}
-
 	/**
 	 * Gibt die durchschnittliche Länge von Titeln in Worten zurück
 	 */
 	int averageThesisTitleLength() {
-		throw new UnsupportedOperationException();
+		// Map mit <title, wortlaenge>
+		Map<String, Integer> titelWorte = new HashMap<>();
+		for (String s : theses) {
+			String[] sSplit = s.split(" ");
+			titelWorte.put(s, sSplit.length);
+		}
+		//Collection mit int wortlaenge
+		Collection<Integer> v = titelWorte.values();
+		int laengeGesamt = 0;
+		for (int i :
+			 v) {
+			laengeGesamt += i;
+		}
+		return laengeGesamt/theses.size();
+
+
 	}
 
 	/**
@@ -31,7 +46,24 @@ class CorpusAnalyzer {
 	 * Liste der ersten Wörter der Titel zurück.
 	 */
 	List<String> uniqueFirstWords() {
-		throw new UnsupportedOperationException();
+		// Set mit duplikatfreien ersten Wörtern
+		Set<String> firstWords = new TreeSet<>();
+		for (String s : theses) {
+			String[] sSplit = s.split(" ");
+			firstWords.add(sSplit[0]);
+		}
+		List<String> unsortedList = new ArrayList<>();
+		for (String s: firstWords){
+			unsortedList.add(s);
+		}
+		Collections.sort(unsortedList, new Comparator<String>() {
+			@Override
+			public int compare(String o1, String o2) {
+				return o2.toString().compareTo(o1.toString());
+			}
+		});
+
+		return unsortedList;
 	}
 
 	/**
@@ -39,7 +71,20 @@ class CorpusAnalyzer {
 	 * in `blackList` vorkommen durch Sternchen ersetzt (so viele * wie Buchstaben).
 	 */
 	Iterator<String> censoredIterator(Set<String> blackList) {
-		throw new UnsupportedOperationException();
+		Set<String> censoredList = new TreeSet<>();
+		for (String s : theses) {
+		    for (String t : blackList) {
+		        if (s.contains(t)){
+		            String censored = "";
+		            for (int i = 0; i < t.length(); i++) {
+		                censored += "*";
+                    }
+		            s = s.replaceAll(t, censored);
+                }
+            }
+            censoredList.add(s);
+        }
+        return censoredList.iterator();
 	}
 
 	/**
@@ -47,6 +92,16 @@ class CorpusAnalyzer {
 	 * wie sie in der Map abgebildet werden.
 	 */
 	List<String> normalizedTheses(Map<String, String> replace) {
-		throw new UnsupportedOperationException();
+		List<String> normList = new LinkedList<>();
+		for (String s : theses) {
+		    Set<String> keys = replace.keySet();
+		    for (String k : keys) {
+		        if (s.contains(k)){
+		            s = s.replaceAll(k, replace.get(k));
+                }
+            }
+            normList.add(s);
+        }
+    return normList;
 	}
 }
